@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+
+    <title>CADASTRAR CLIENTES</title>
+</head>
+<body>
+<H1>Cadastro Cliente</H1>
+<form method="POST" action="{% url 'conectapsiApp:cadastrarclientes'  %}">
+        {% csrf_token %}
+        {{ form }}
+
+    <br />
+    <br />
+
+   <input type="submit" value="Cadastrar"> <input type="button" value="Voltar" onclick="location.href='{% url 'conectapsi:home' %}'">
+    </form>
+{% if msg %} {{msg}} {% endif %}
+
+</body>
+</html>

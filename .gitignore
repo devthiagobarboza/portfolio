@@ -1,0 +1,44 @@
+# Ignorar arquivos compilados pelo Python
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+
+# Ignorar arquivos e pastas de ambiente virtual
+env/
+venv/
+ENV/
+VENV/
+*.env
+*.env.*
+
+# Ignorar dependências instaladas pelo pip
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Ignorar arquivos de banco de dados local
+*.mssql
+db.*
+
+
+# Ignorar arquivos do Django
+/static/
+media/
+
+# Ignorar arquivos de log
+*.log
+
+# Ignorar IDEs e editores
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Ignorar arquivos do sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Ignorar migrações geradas automaticamente (se desejar)
+*/migrations/*.py
+!*/migrations/__init__.py
