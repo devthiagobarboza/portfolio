@@ -4,6 +4,7 @@ from django.core.exceptions import ValidationError
 import re
 
 
+
 def validar_cpf(value):
     cpf = re.sub(r'\D', '', value)  # Remove caracteres não numéricos
 
@@ -20,6 +21,40 @@ def validar_cpf(value):
             raise ValidationError("CPF inválido.")
 
     return value
+
+
+class Endereco(models.Model):
+    id_end = models.AutoField(primary_key=True)
+    rua = models.CharField(max_length=100, null=False)
+    numero = models.CharField(max_length=10, null=False)
+    complemento = models.CharField(max_length=50, blank=True, null=True)
+    bairro = models.CharField(max_length=100, null=False)
+    cidade = models.CharField(max_length=100, null=False)
+    uf = models.CharField(max_length=2, null=False)
+    cep = models.CharField(max_length=8, null=False)
+    id_pct = models.ForeignKey("Clientes", on_delete=models.CASCADE, related_name='enderecos')
+
+    def __str__(self):
+        return '{}, {}, {}, {}, {}, {}, {}, {}, {}'.format(self.id_end,
+                                                           self.rua,
+                                                           self.numero,
+                                                           self.complemento,
+                                                           self.bairro,
+                                                           self.cidade,
+                                                           self.uf,
+                                                           self.cep,
+                                                           self.id_pct)
+
+    def __repr__(self):
+        return '{}, {}, {}, {}, {}, {}, {}, {}, {}'.format(self.id_end,
+                                                           self.rua,
+                                                           self.numero,
+                                                           self.complemento,
+                                                           self.bairro,
+                                                           self.cidade,
+                                                           self.uf,
+                                                           self.cep,
+                                                           self.id_pct)
 
 
 class Clientes(models.Model):
@@ -47,89 +82,58 @@ class Clientes(models.Model):
     data_cadastro = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return ('{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}'.
-                format(self.id_pct,
-                       self.nome,
-                       self.sobrenome,
-                       self.nome_social,
-                       self.genero,
-                       self.data_nascimento,
-                       self.cpf,
-                       self.estado_civil,
-                       self.conjuge_nome,
-                       self.conjuge_idade,
-                       self.conjuge_sexo,
-                       self.filhos_nome,
-                       self.filhos_idade,
-                       self.filhos_sexo,
-                       self.profissao,
-                       self.escolaridade,
-                       self.religiao,
-                       self.telefone_principal,
-                       self.telefone_emergencia,
-                       self.email,
-                       self.data_cadastro,
-                       self.observacoes))
+        return f"{self.nome} {self.sobrenome}"
 
-    def __repr__(self):
-        return ('{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}'.
-                format(self.id_pct,
-                       self.nome,
-                       self.sobrenome,
-                       self.nome_social,
-                       self.genero,
-                       self.data_nascimento,
-                       self.cpf,
-                       self.estado_civil,
-                       self.conjuge_nome,
-                       self.conjuge_idade,
-                       self.conjuge_sexo,
-                       self.filhos_nome,
-                       self.filhos_idade,
-                       self.filhos_sexo,
-                       self.profissao,
-                       self.escolaridade,
-                       self.religiao,
-                       self.telefone_principal,
-                       self.telefone_emergencia,
-                       self.email,
-                       self.data_cadastro,
-                       self.observacoes))
-
-
-class Endereco(models.Model):
-    id_end = models.AutoField(primary_key=True)
-    rua = models.CharField(max_length=100, null=False)
-    numero = models.CharField(max_length=10, null=False)
-    complemento = models.CharField(max_length=50, blank=True, null=True)
-    bairro = models.CharField(max_length=100, null=False)
-    cidade = models.CharField(max_length=100, null=False)
-    uf = models.CharField(max_length=2, null=False)
-    cep = models.CharField(max_length=8, null=False)
-    id_pct = models.ForeignKey("Clientes", on_delete=models.CASCADE)
-
-    def __str__(self):
-        return '{}, {}, {}, {}, {}, {}, {}, {}, {}'.format(self.id_end,
-                                                           self.rua,
-                                                           self.numero,
-                                                           self.complemento,
-                                                           self.bairro,
-                                                           self.cidade,
-                                                           self.uf,
-                                                           self.cep,
-                                                           self.id_pct)
-
-    def __repr__(self):
-        return '{}, {}, {}, {}, {}, {}, {}, {}, {}'.format(self.id_end,
-                                                           self.rua,
-                                                           self.numero,
-                                                           self.complemento,
-                                                           self.bairro,
-                                                           self.cidade,
-                                                           self.uf,
-                                                           self.cep,
-                                                           self.id_pct)
-
+    # def __str__(self):
+    #     return ('{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}'.
+    #             format(self.id_pct,
+    #                    self.nome,
+    #                    self.sobrenome,
+    #                    self.nome_social,
+    #                    self.genero,
+    #                    self.data_nascimento,
+    #                    self.cpf,
+    #                    self.estado_civil,
+    #                    self.conjuge_nome,
+    #                    self.conjuge_idade,
+    #                    self.conjuge_sexo,
+    #                    self.filhos_nome,
+    #                    self.filhos_idade,
+    #                    self.filhos_sexo,
+    #                    self.profissao,
+    #                    self.escolaridade,
+    #                    self.religiao,
+    #                    self.telefone_principal,
+    #                    self.telefone_emergencia,
+    #                    self.email,
+    #                    self.data_cadastro,
+    #                    self.observacoes))
+    #
+    # def __repr__(self):
+    #     return ('{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}'.
+    #             format(self.id_pct,
+    #                    self.nome,
+    #                    self.sobrenome,
+    #                    self.nome_social,
+    #                    self.genero,
+    #                    self.data_nascimento,
+    #                    self.cpf,
+    #                    self.estado_civil,
+    #                    self.conjuge_nome,
+    #                    self.conjuge_idade,
+    #                    self.conjuge_sexo,
+    #                    self.filhos_nome,
+    #                    self.filhos_idade,
+    #                    self.filhos_sexo,
+    #                    self.profissao,
+    #                    self.escolaridade,
+    #                    self.religiao,
+    #                    self.telefone_principal,
+    #                    self.telefone_emergencia,
+    #                    self.email,
+    #                    self.data_cadastro,
+    #                    self.observacoes))
+    #
 
 class Anamnese(models.Model):
     id_anamense = models.AutoField(primary_key=True)
@@ -191,14 +195,16 @@ class Anamnese(models.Model):
     atendimentos_prestados_destino_do_caso_interrompido = models.CharField(max_length=255, blank=True, null=True)
     atendimentos_prestados_destino_do_caso_melhoras_obtidas = models.TextField(blank=True, null=True)
     atendimentos_prestados_destino_do_caso_outras_obs = models.TextField(blank=True, null=True)
-    id_pct = models.ForeignKey("Clientes", on_delete=models.CASCADE)
+    id_pct = models.ForeignKey(Clientes, on_delete=models.CASCADE)
 
     def __str__(self):
-        return ('{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, '
+
+        return ('{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, '
                 '{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, '
                 '{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, '
                 '{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, '
                 '{}, {}, {}, {}, {}, {}').format(
+            self.id_pct,
             self.id_anamense,
             self.tipo_de_atendimento,
             self.plano_de_saude,
@@ -260,11 +266,12 @@ class Anamnese(models.Model):
         )
 
     def __repr__(self):
-        return ('{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, '
+        return ('{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, '
                 '{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, '
                 '{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, '
                 '{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, '
                 '{}, {}, {}, {}, {}, {}').format(
+            self.id_pct.name,
             self.id_anamense,
             self.tipo_de_atendimento,
             self.plano_de_saude,

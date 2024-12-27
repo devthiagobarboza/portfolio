@@ -9,16 +9,31 @@
 </head>
 <body>
 <H1>Cadastro Cliente</H1>
-<form method="POST" action="{% url 'conectapsiApp:cadastrarclientes'  %}">
+<form class="form-control" method="POST" action="{% url 'conectapsiApp:cadastrarclientes'  %}">
         {% csrf_token %}
-        {{ form.as_p }}
+    <h2>Dados do Cliente</h2>
+
+        {{ clientes_form.as_p }}
+    <h2>Endereço</h2>
+        {{ endereco_formset.management_form }}
+        {% for form in endereco_formset %}
+            {{ form.as_p }}
+        {% endfor %}
+
+
 
     <br />
     <br />
 
-   <input type="submit" value="Cadastrar"> <input type="button" value="Voltar" onclick="location.href='{% url 'conectapsi:home' %}'">
+   <input type="submit" value="Cadastrar">
+    <input type="button" value="Voltar" onclick="location.href='{% url 'conectapsi:home' %}'">
+    <input type="submit" value="Ir para Anamnese" onclick="location.href='{% url 'conectapsi:anamnese' %}">
+
+
     </form>
 {% if msg %} {{msg}} {% endif %}
 
+
 </body>
+
 </html>

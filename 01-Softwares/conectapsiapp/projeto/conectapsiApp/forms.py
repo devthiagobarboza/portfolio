@@ -1,5 +1,8 @@
 from django import forms
-from .models import Clientes, Anamnese
+from .models import Clientes, Anamnese, Endereco
+from django.forms import inlineformset_factory
+from django_select2.forms import ModelSelect2Widget
+
 
 ESTADO_CIVIL = (
     ('S', 'Solteiro'),
@@ -81,12 +84,7 @@ class ClientesForm(forms.ModelForm):
             'sobrenome': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Sobrenome'}),
             'nome_social': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nome Social'}),
             'genero': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Gênero'}, choices=GENEROS),
-            'data_nascimento': forms.DateInput(attrs={
-                'class': 'form-control',
-                'type': 'date',
-                'help_text': 'Escolha uma data',
-            },  # Isso permite a exibição de um calendário para seleção.
-            ),
+            'data_nascimento': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'cpf': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '000.000.000-00'}, ),
             'estado_civil': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Estado civil'},
                                          choices=ESTADO_CIVIL),
@@ -110,6 +108,8 @@ class AnamneseForm(forms.ModelForm):
     class Meta:
         model = Anamnese
         fields = [
+            #'cliente_nome',
+            'id_pct',
             'queixa_principal',
             'possibilidade_de_horarios',
             'fez_terapia_anterior',
@@ -170,6 +170,7 @@ class AnamneseForm(forms.ModelForm):
         ]
 
         labels = {
+            'id_pct': 'Selecione o paciente',
             'tipo_de_atendimento': 'Tipo de Atendimento',
             'plano_de_saude': 'Plano de Saúde',
             'numero_carteirinha': 'Número da Carteirinha',
@@ -230,8 +231,12 @@ class AnamneseForm(forms.ModelForm):
             'atendimentos_prestados_destino_do_caso_outras_obs': 'Outras Observações Importantes',
         }
         widgets = {
+            'id_pct': ModelSelect2Widget(
+                model=Clientes,
+                search_fields=['nome__icontains', 'sobrenome__icontains'],
+                attrs={'class': 'form-control', 'data-placeholder': 'Busque Por Nome, Sobrenome'}),
             'queixa_principal': forms.Textarea(attrs={'class': 'form-control',
-                                                       'placeholder': 'Queixa Principal',
+                                                       'placeholder': 'Descreva a queixa principal',
                                                        'rows': 4}),
             'possibilidade_de_horarios': forms.TextInput(attrs={'class': 'form-control',
                                                                 'placeholder': 'Possibilidade de Horários'}),
@@ -365,4 +370,54 @@ class AnamneseForm(forms.ModelForm):
                                                                                         'placeholder': 'Outras'
                                                                                                        'Observações '
                                                                                                        'Importantes'}),
+
         }
+
+
+
+
+
+class EnderecoForm(forms.ModelForm):
+    class Meta:
+        model = Endereco
+        fields = [
+            'rua',
+            'numero',
+            'complemento',
+            'bairro',
+            'cidade',
+            'uf',
+            'cep',
+            ]
+        labels = {
+            'rua': 'Rua',
+            'numero': 'Número',
+            'complemento': 'Complemento',
+            'bairro': "Bairro",
+            'cidade': "Cidade",
+            'uf': 'UF',
+            'cep': 'CEP',
+        }
+        widgets = {
+            'rua': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Rua'}),
+            'numero': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Número'}),
+            'complemento': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Complemento'}),
+            'bairro': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Bairro'}),
+            'cidade': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Cidade'}),
+            'uf': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Estado'}),
+            'cep': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'CEP'}),
+        }
+
+
+
+
+EnderecoFormSet = inlineformset_factory(
+    Clientes,
+    Endereco,
+    form=EnderecoForm,
+
+    extra=1,
+    can_delete=False
+)
+
+

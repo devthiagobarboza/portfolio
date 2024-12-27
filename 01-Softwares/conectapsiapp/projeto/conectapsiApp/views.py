@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from .forms import ClientesForm, AnamneseForm
+from .forms import ClientesForm, AnamneseForm, EnderecoFormSet
 
 
 # Create your views here.
@@ -8,8 +8,7 @@ from .forms import ClientesForm, AnamneseForm
 CADASTRAR_CLIENTE = 'conectapsiApp/cadastroclientes.html'
 HOME = 'conectapsiApp/home.html'
 ANAMNESE = 'conectapsiApp/anamnese.html'
-
-
+DOCUMENTOS = 'conectapsiApp/documentos.html'
 
 
 def home(request):
@@ -17,10 +16,7 @@ def home(request):
 
 
 def clientes_form_base(request):
-    form = ClientesForm()
-    # template = loader.get_template('conectapsiApp/cadastroclientes.html')
-    return render(request, 'conectapsiApp/cadastroclientes.html', {'form': form})
-
+    return render(request, CADASTRAR_CLIENTE, {'clientes_form': ClientesForm(), 'endereco_formset': EnderecoFormSet()})
 
 def evolucao(request):
     return HttpResponse('<h1>Evolução Paciente</h1>')
@@ -59,17 +55,33 @@ def evolucao(request):
 #         msg = ex.args
 #         return render(request, CADASTRAR_CLIENTE, {'form': ClientesForm(), 'msg': msg})
 
-def clientes_form(request):
-    if request.method == 'POST':
-        form = ClientesForm(request.POST)
-        if form.is_valid():
-            form.save()
+def cadastrar_clientes(request):
+    try:
+        if request.method == 'POST':
+            clientes_form = ClientesForm(request.POST)
+            endereco_formset = EnderecoFormSet(request.POST)
 
-            msg = 'Cliente cadastrado com sucesso'
-        else:
-            msg = form.errors
+            if clientes_form.is_valid() and endereco_formset.is_valid():
+                cliente = clientes_form.save()
+                enderecos = endereco_formset.save(commit=False)
+                for endereco in enderecos:
+                    endereco.id_pct = cliente
+                    endereco.save()
 
-        return render(request, CADASTRAR_CLIENTE, {'form': ClientesForm(), 'msg': msg})
+                msg = 'Cliente cadastrado com sucesso'
+            else:
+                msg = clientes_form.errors and endereco_formset.errors
+
+            return render(request, CADASTRAR_CLIENTE, {'clientes_form': ClientesForm(),
+                                                       'endereco_formset': EnderecoFormSet(),
+                                                       'msg': msg})
+    except Exception as ex:
+        msg = ex.args
+        return render(request, CADASTRAR_CLIENTE, {'clientes_form': ClientesForm(),
+                                                   'endereco_formset': EnderecoFormSet(),
+                                                   'msg': msg})
+
+
 
 
 def anamnese_form_base(request):
@@ -77,19 +89,20 @@ def anamnese_form_base(request):
     # template = loader.get_template('conectapsiApp/cadastroclientes.html')
     return render(request, 'conectapsiApp/anamnese.html', {'form': form})
 
-def anamnese_form(request):
+
+def cadastrar_anamnese(request):
     if request.method == 'POST':
         form = AnamneseForm(request.POST)
         if form.is_valid():
-            form.cleaned_data.save()
+            form.save()
+
             msg = 'Anamnese Salva Com Sucesso!'
         else:
             msg = 'Erro ao Criar Anamnese'
-        return render(request, ANAMNESE, {'form': AnamneseForm(), 'msg': msg})
+        return render(request, ANAMNESE, {'form': AnamneseForm, 'msg': msg})
+
 
 
 def documentos(request):
-    pass
+    return render(request, DOCUMENTOS)
 
-
-# return render(request, 'conectapsiApp/cadastroclientes.html', {'form': form})

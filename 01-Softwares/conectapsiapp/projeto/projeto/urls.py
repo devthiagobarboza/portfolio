@@ -20,5 +20,8 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('conectapsi/', include('conectapsiApp.urls', namespace='conectapsi')),
+    path('', include('conectapsiApp.urls', namespace='home')),
+    path('select2/', include('django_select2.urls')),
+
 
 ]
