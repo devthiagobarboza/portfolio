@@ -44,7 +44,6 @@ INSTALLED_APPS = [
     'django_select2',
     'jquery',
 ]
-
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 MIDDLEWARE = [

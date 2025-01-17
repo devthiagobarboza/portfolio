@@ -8,9 +8,11 @@
 <h1>Sistema de Gerenciamento de Consultório</h1>
 <ul>
     <li><a href="{% url 'conectapsi:home'  %}">Home</a></li>
-    <li><a href="{% url 'conectapsi:clientes' %}">Clientes</a></li>
-    <li><a href="{% url 'conectapsi:documentos' %}">Documentos</a></li>
+    <li><a href="{% url 'conectapsi:cadastroclientes' %}">Cadastrar Clientes</a></li>
+    <li><a href="#">Consultar Clientes</a></li>
     <li><a href="#">Prontuário</a></li>
+    <li><a href=" {% url 'conectapsi:sessaoclinica' %}">Sessão Clínica</a></li>
+    <li><a href="{% url 'conectapsi:anamnese' %}">Anamnese</a></li>
     <li><a href="#">Lançamentos</a></li>
 
 </ul>

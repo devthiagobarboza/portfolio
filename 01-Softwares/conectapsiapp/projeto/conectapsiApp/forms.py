@@ -1,14 +1,13 @@
 from django import forms
-from .models import Clientes, Anamnese, Endereco
+from .models import Clientes, Anamnese, Endereco, SessaoClinica
 from django.forms import inlineformset_factory
 from django_select2.forms import ModelSelect2Widget
 
-
 ESTADO_CIVIL = (
-    ('S', 'Solteiro'),
-    ('C', 'Casado'),
-    ('Se', 'Separado'),
-    ('V', 'Viúvo'),
+    ('Solteiro', 'Solteiro'),
+    ('Casado', 'Casado'),
+    ('Separado', 'Separado'),
+    ('Viuvo', 'Viúvo'),
 )
 
 GENEROS = (
@@ -84,7 +83,7 @@ class ClientesForm(forms.ModelForm):
             'sobrenome': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Sobrenome'}),
             'nome_social': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nome Social'}),
             'genero': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Gênero'}, choices=GENEROS),
-            'data_nascimento': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'data_nascimento': forms.DateInput(attrs={'class': 'form-control', 'type': 'text'}),
             'cpf': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '000.000.000-00'}, ),
             'estado_civil': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Estado civil'},
                                          choices=ESTADO_CIVIL),
@@ -108,7 +107,6 @@ class AnamneseForm(forms.ModelForm):
     class Meta:
         model = Anamnese
         fields = [
-            #'cliente_nome',
             'id_pct',
             'queixa_principal',
             'possibilidade_de_horarios',
@@ -234,10 +232,11 @@ class AnamneseForm(forms.ModelForm):
             'id_pct': ModelSelect2Widget(
                 model=Clientes,
                 search_fields=['nome__icontains', 'sobrenome__icontains'],
-                attrs={'class': 'form-control', 'data-placeholder': 'Busque Por Nome, Sobrenome'}),
+                attrs={'class': 'form-control',
+                       'data-placeholder': 'Busque Por Nome, Sobrenome'}),
             'queixa_principal': forms.Textarea(attrs={'class': 'form-control',
-                                                       'placeholder': 'Descreva a queixa principal',
-                                                       'rows': 4}),
+                                                      'placeholder': 'Descreva a queixa principal',
+                                                      'rows': 4}),
             'possibilidade_de_horarios': forms.TextInput(attrs={'class': 'form-control',
                                                                 'placeholder': 'Possibilidade de Horários'}),
             'fez_terapia_anterior': forms.TextInput(attrs={'class': 'form-control',
@@ -301,7 +300,8 @@ class AnamneseForm(forms.ModelForm):
                                                            'placeholder': 'Amamentação'}),
             'infancia_estressores_crises': forms.TextInput(attrs={'class': 'form-control',
                                                                   'placeholder': 'Estressores na infância, crises'}),
-            'infancia_transtornos_infantis': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'sono, psicomotor, gagueira, tique etc'}),
+            'infancia_transtornos_infantis': forms.TextInput(
+                attrs={'class': 'form-control', 'placeholder': 'sono, psicomotor, gagueira, tique etc'}),
             'infancia_comentarios': forms.TextInput(attrs={'class': 'form-control',
                                                            'placeholder': 'Comentários'}),
             'adolescencia_experiencias_afetivas_marcantes': forms.TextInput(attrs={'class': 'form-control',
@@ -374,9 +374,6 @@ class AnamneseForm(forms.ModelForm):
         }
 
 
-
-
-
 class EnderecoForm(forms.ModelForm):
     class Meta:
         model = Endereco
@@ -388,7 +385,7 @@ class EnderecoForm(forms.ModelForm):
             'cidade',
             'uf',
             'cep',
-            ]
+        ]
         labels = {
             'rua': 'Rua',
             'numero': 'Número',
@@ -409,15 +406,62 @@ class EnderecoForm(forms.ModelForm):
         }
 
 
+def get_endereco_formset(extra=1, can_delete=False):
+    return inlineformset_factory(
+        Clientes,
+        Endereco,
+        form=EnderecoForm,
+        extra=extra,
+        can_delete=can_delete)
 
 
 EnderecoFormSet = inlineformset_factory(
     Clientes,
     Endereco,
     form=EnderecoForm,
-
     extra=1,
-    can_delete=False
-)
+    can_delete=False)
 
 
+class SessaoClinicaForm(forms.ModelForm):
+    class Meta:
+        model = SessaoClinica
+        fields = [
+            'id_pct',
+            'objetivos',
+            'data_atendimento',
+            'numero_da_sessao',
+            'pontos_importantes_da_sessao',
+            'principais_sintomas',
+            'observacoes_clinicas',
+            'evolucao',
+        ]
+        labels = {
+            'id_pct': 'Selecione o paciente',
+            'objetivos': 'Objetivos',
+            'data_atendimento': 'Data do Atendimento',
+            'numero_da_sessao': 'Número da Sessão',
+            'pontos_importantes_da_sessao': 'Pontos Importantes da Sessão',
+            'principais_sintomas': 'Principais Sintomas',
+            'observacoes_clinicas': 'Observações Clínicas',
+            'evolucao': 'Evolução',
+        }
+
+        widget = {
+            'id_pct': ModelSelect2Widget(
+                model=Clientes,
+                search_fields=['nome__icontains', 'sobrenome__icontains'],
+                attrs={'class': 'form-control',
+                       'data-placeholder': 'Busque Por Nome, Sobrenome'}),
+            'objetivos': forms.TextInput(
+                attrs={'class': 'form-control', 'placeholder': 'Qual o ojetivo desse paciente?'}),
+            'data_atendimento': forms.DateInput(
+                attrs={'class': 'form-control', 'placeholder': 'O atendimento foi no dia?'}),
+            'numero_da_sessao': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Estamos na sessão?'}),
+            'pontos_importantes_da_sessao': forms.TextInput(
+                attrs={'class': 'form-control', 'placeholder': 'Isso é importante...'}),
+            'principais_sintomas': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'O que sinto é ...'}),
+            'observacoes_clinicas': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Observei que ...'}),
+            'evolucao': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Na sessão de hoje ... '}),
+
+        }

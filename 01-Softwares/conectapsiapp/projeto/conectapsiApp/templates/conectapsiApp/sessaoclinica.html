@@ -1,0 +1,32 @@
+{% extends 'conectapsiApp/base.html' %}
+{% load static %}
+{{form.media}}
+
+{% block extra_css %}
+
+{% endblock %}
+
+{% block content %}
+    <H1>Sessão Clínica</H1>
+<form method="POST" action="{% url 'conectapsiApp:cadastrarsessaoclinica'  %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+    {% if msg %} {{msg}} {% endif %}
+    <br />
+    <br />
+
+   <input type="submit" value="Cadastrar"> <input type="button" value="Voltar" onclick="location.href='{% url 'conectapsi:home' %}'">
+    </form>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'jquery/js/jquery-3.7.1.min.js' %}"></script>
+    <script src="/static/js/select2.min.js"></script>
+    <script src="/static/django_select2/django_select2.js"></script>
+<script>
+        $(document).ready(function() {
+        $('#id_id_pct').select2();
+        });
+    </script>
+
+{% endblock %}

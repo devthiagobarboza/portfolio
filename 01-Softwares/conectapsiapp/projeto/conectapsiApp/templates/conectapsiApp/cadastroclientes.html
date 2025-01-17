@@ -12,7 +12,6 @@
 <form class="form-control" method="POST" action="{% url 'conectapsiApp:cadastrarclientes'  %}">
         {% csrf_token %}
     <h2>Dados do Cliente</h2>
-
         {{ clientes_form.as_p }}
     <h2>Endereço</h2>
         {{ endereco_formset.management_form }}

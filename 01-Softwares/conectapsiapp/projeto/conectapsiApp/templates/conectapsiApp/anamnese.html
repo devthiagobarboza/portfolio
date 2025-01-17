@@ -5,23 +5,21 @@
     {% load static %}
     <meta charset="UTF-8">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
-
-    <title>CADASTRAR CLIENTES</title>
-
-    <!-- jQuery -->
+<!-- jQuery -->
     <script src="{% static 'jquery/js/jquery-3.7.1.min.js' %}"></script>
+    <script src="{% static 'js/select2.min.js' %}"></script>
 
-    <!-- Tradução pt-BR
-    <script src="{% static 'js/pt-BR.js' %}"></script>
-    CSS
-    <link href="{% static 'css/select2.min.css' %}" rel="stylesheet">-->
+    <title>CONECTAPSI | ANAMNESE</title>
+
+
+
+
 </head>
 <body>
 <H1>Anamnese</H1>
 <form method="POST" action="{% url 'conectapsiApp:cadastraranamnese'  %}">
         {% csrf_token %}
         {{ form.media}}
-
         {{ form.as_p }}
 
     <br />
@@ -30,6 +28,7 @@
    <input type="submit" value="Cadastrar"> <input type="button" value="Voltar" onclick="location.href='{% url 'conectapsi:home' %}'">
     </form>
 {% if msg %} {{msg}} {% endif %}
+
 
 </body>
 </html>

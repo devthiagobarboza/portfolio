@@ -1,0 +1,49 @@
+{% extends 'conectapsiApp/base.html' %}
+{% load static %}
+{{form.media}}
+
+{% block extra_css %}
+
+{% endblock %}
+
+{% block content %}
+
+<p>Listagem de Clientes</p>
+<table width="100%" border="1">
+    <thead>
+    <tr>
+        <th>Nome</th>
+        <th>Sobrenome</th>
+        <th>Nome Social</th>
+        <th>Gênero</th>
+        <th>Data de Nascimento</th>
+        <th>CPF</th>
+        <th>Estado Civil</th>
+        <th>Observações</th>
+        <th>Operações</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for cliente in clientes %}
+    <tr>
+        <td>{{ cliente.nome }}</td>
+        <td>{{ cliente.sobrenome }}</td>
+        <td>{{ cliente.nome_social }}</td>
+        <td>{{ cliente.genero }}</td>
+        <td>{{ cliente.data_nascimento }}</td>
+        <td>{{ cliente.cpf }} </td>
+        <td>{{ cliente.estado_civil }}</td>
+        <td>{{ cliente.observacoes }}</td>
+        <td><a href="{% url 'conectapsiApp:alterarcliente' codigo=cliente.id_pct  %}"> Alterar </a> |
+            <a href="{% url 'conectapsiApp:excluircliente' codigo=cliente.id_pct  %}"
+               onclick="return window.confirm('Deseja realmente excluir?');"> Excluir </a></td>
+
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="3">Nenhum cliente cadastrado.</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

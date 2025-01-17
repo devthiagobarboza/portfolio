@@ -1,10 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
+{% load static %}
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/admin/css/vendor/select2/select2.min.css">
+    <link rel="stylesheet" href="/static/django_select2/django_select2.css">
+
+    <!-- jQuery -->
+    <script src="/static/jquery/js/jquery-3.7.1.min.js"></script>
+    <script src="/static/js/select2.min.js"></script>
+    <script src="/static/admin/js/vendor/select2/i18n/pt-BR.js"></script>
+
+    <!-- JS -->
+    <script src="/static/admin/js/vendor/select2/select2.full.min.js"></script>
+    <script src="/static/jquery/js/jquery-3.7.1.min.js"></script>
+
+    <script src=""></script>
+
+
+    <title>{% block title %} CONECTAPSI {% endblock%} </title>
+     {% block extra_css %} {% endblock %}
+    {% block menu %} <h1>Sistema de Gerenciamento de Consultório</h1>
+<ul>
+    <li><a href="{% url 'conectapsi:home'  %}">Home</a></li>
+    <li><a href="{% url 'conectapsi:cadastroclientes' %}">Cadastrar Clientes</a></li>
+    <li><a href="{% url 'conectapsi:listarclientes' %}">Consultar Clientes</a></li>
+    <li><a href="#">Prontuário</a></li>
+    <li><a href=" {% url 'conectapsi:sessaoclinica' %}">Sessão Clínica</a></li>
+    <li><a href="{% url 'conectapsi:anamnese' %}">Anamnese</a></li>
+    <li><a href="#">Lançamentos</a></li>
+
+</ul> {% endblock %}
+
 </head>
 <body>
+    {% block content %}{% endblock %}
 
+    {% block extra_js %}{% endblock %}
 </body>
 </html>

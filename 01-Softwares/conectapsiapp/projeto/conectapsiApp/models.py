@@ -4,7 +4,6 @@ from django.core.exceptions import ValidationError
 import re
 
 
-
 def validar_cpf(value):
     cpf = re.sub(r'\D', '', value)  # Remove caracteres não numéricos
 
@@ -56,6 +55,8 @@ class Endereco(models.Model):
                                                            self.cep,
                                                            self.id_pct)
 
+    objects = models.Manager()
+
 
 class Clientes(models.Model):
     id_pct = models.AutoField(primary_key=True)
@@ -63,7 +64,7 @@ class Clientes(models.Model):
     sobrenome = models.CharField(max_length=100, null=False, default="")
     nome_social = models.CharField(max_length=100, blank=True, null=True)
     genero = models.CharField(max_length=20, null=False)
-    data_nascimento = models.DateField(null=False)
+    data_nascimento = models.DateField(blank=True, null=True)
     cpf = models.CharField(max_length=14, null=False, validators=[validar_cpf])
     estado_civil = models.CharField(max_length=10, null=False)
     conjuge_nome = models.CharField(max_length=100, blank=True, null=True)
@@ -81,59 +82,11 @@ class Clientes(models.Model):
     observacoes = models.CharField(max_length=255, blank=True, null=True)
     data_cadastro = models.DateTimeField(auto_now_add=True)
 
+    objects = models.Manager()
+
     def __str__(self):
         return f"{self.nome} {self.sobrenome}"
 
-    # def __str__(self):
-    #     return ('{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}'.
-    #             format(self.id_pct,
-    #                    self.nome,
-    #                    self.sobrenome,
-    #                    self.nome_social,
-    #                    self.genero,
-    #                    self.data_nascimento,
-    #                    self.cpf,
-    #                    self.estado_civil,
-    #                    self.conjuge_nome,
-    #                    self.conjuge_idade,
-    #                    self.conjuge_sexo,
-    #                    self.filhos_nome,
-    #                    self.filhos_idade,
-    #                    self.filhos_sexo,
-    #                    self.profissao,
-    #                    self.escolaridade,
-    #                    self.religiao,
-    #                    self.telefone_principal,
-    #                    self.telefone_emergencia,
-    #                    self.email,
-    #                    self.data_cadastro,
-    #                    self.observacoes))
-    #
-    # def __repr__(self):
-    #     return ('{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}'.
-    #             format(self.id_pct,
-    #                    self.nome,
-    #                    self.sobrenome,
-    #                    self.nome_social,
-    #                    self.genero,
-    #                    self.data_nascimento,
-    #                    self.cpf,
-    #                    self.estado_civil,
-    #                    self.conjuge_nome,
-    #                    self.conjuge_idade,
-    #                    self.conjuge_sexo,
-    #                    self.filhos_nome,
-    #                    self.filhos_idade,
-    #                    self.filhos_sexo,
-    #                    self.profissao,
-    #                    self.escolaridade,
-    #                    self.religiao,
-    #                    self.telefone_principal,
-    #                    self.telefone_emergencia,
-    #                    self.email,
-    #                    self.data_cadastro,
-    #                    self.observacoes))
-    #
 
 class Anamnese(models.Model):
     id_anamense = models.AutoField(primary_key=True)
@@ -198,7 +151,6 @@ class Anamnese(models.Model):
     id_pct = models.ForeignKey(Clientes, on_delete=models.CASCADE)
 
     def __str__(self):
-
         return ('{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, '
                 '{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, '
                 '{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, '
@@ -333,30 +285,19 @@ class Anamnese(models.Model):
         )
 
 
-class prontuario(models.Model):
-    id_psi = models.AutoField(primary_key=True)
-    motivo_consulta = models.TextField(blank=True, null=True)
-    historico_tratamentos = models.TextField(blank=True, null=True)
+class SessaoClinica(models.Model):
+    id_sc = models.AutoField(primary_key=True)
+    objetivos = models.TextField(blank=True, null=True)
+    data_atendimento = models.DateField(default='')
+    numero_da_sessao = models.IntegerField(blank=True, null=True)
+    pontos_importantes_da_sessao = models.TextField(blank=True, null=True)
     principais_sintomas = models.TextField(blank=True, null=True)
     observacoes_clinicas = models.TextField(blank=True, null=True)
     evolucao = models.TextField(blank=True, null=True)
-    id_pct = models.ForeignKey("Clientes", on_delete=models.CASCADE)
+    id_pct = models.ForeignKey('Clientes', on_delete=models.CASCADE, related_name='nome_cliente')
 
     def __str__(self):
-        return '{}, {}, {}, {}, {}, {}'.format(self.id_psi,
-                                                   self.motivo_consulta,
-                                                   self.historico_tratamentos,
-                                                   self.principais_sintomas,
-                                                   self.observacoes_clinicas,
-                                                   self.evolucao)
-
-    def __repr__(self):
-        return '{}, {}, {}, {}, {}, {}'.format(self.id_psi,
-                                                   self.motivo_consulta,
-                                                   self.historico_tratamentos,
-                                                   self.principais_sintomas,
-                                                   self.observacoes_clinicas,
-                                                   self.evolucao)
+        return self.id_pct.name
 
 
 class Consultas(models.Model):
