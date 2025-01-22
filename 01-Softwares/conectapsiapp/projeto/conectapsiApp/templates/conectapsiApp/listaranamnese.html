@@ -1,0 +1,43 @@
+{% extends 'conectapsiApp/base.html' %}
+{% load static %}
+{{form.media}}
+
+{% block extra_css %}
+
+{% endblock %}
+
+{% block content %}
+
+<p>Listar Anamnese</p>
+<table width="100%" border="1">
+    <thead>
+    <tr>
+        <th>Nome</th>
+        <th>Sobrenome</th>
+        <th>Queixa Principal</th>
+        <th>Sintomas Apresentados</th>
+        <th>Operações</th>
+    </tr>
+    </thead>
+    <tbody>
+
+    {% for anamnese in anamneses %}
+    <tr>
+        <td>{{ anamnese.id_pct.nome }}</td>
+        <td>{{ anamnese.id_pct.sobrenome }}</td>
+        <td>{{ anamnese.queixa_principal }} </td>
+        <td>{{ anamnese.sintomas_apresentados }}</td>
+        <td><a href="{% url 'conectapsiApp:alteraranamnese' codigo=anamnese.id_anamense  %}"> Alterar </a> |
+            <a href="{% url 'conectapsiApp:excluiranamnese' codigo=anamnese.id_anamense %}"
+               onclick="return window.confirm('Deseja realmente excluir?');"> Excluir </a></td>
+    </tr>
+
+ {% empty %}
+    <tr>
+        <td colspan="3">Nenhuma anamnese encontrada.</td>
+    </tr>
+      {%endfor%}
+
+    </tbody>
+</table>
+{% endblock %}

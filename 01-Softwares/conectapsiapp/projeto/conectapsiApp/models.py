@@ -65,7 +65,7 @@ class Clientes(models.Model):
     nome_social = models.CharField(max_length=100, blank=True, null=True)
     genero = models.CharField(max_length=20, null=False)
     data_nascimento = models.DateField(blank=True, null=True)
-    cpf = models.CharField(max_length=14, null=False, validators=[validar_cpf])
+    cpf = models.CharField(unique=True, max_length=14, null=False, validators=[validar_cpf])
     estado_civil = models.CharField(max_length=10, null=False)
     conjuge_nome = models.CharField(max_length=100, blank=True, null=True)
     conjuge_idade = models.CharField(max_length=10, blank=True, null=True)
@@ -283,6 +283,8 @@ class Anamnese(models.Model):
             self.atendimentos_prestados_destino_do_caso_melhoras_obtidas,
             self.atendimentos_prestados_destino_do_caso_outras_obs
         )
+
+    objects = models.Manager()
 
 
 class SessaoClinica(models.Model):

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alterar Anamnese</title>
+</head>
+<body>
+    <h1>Alterar Anamnese</h1>
+    <form class="form-control" method="POST">
+        {% csrf_token %}
+
+        <fieldset>
+            <legend>Anamnese</legend>
+            {{ anamnese_form.management_form }}
+              {{ anamnese_form.as_p }}
+
+
+        </fieldset>
+        {% if msg %}
+            <p style="color: red;">{{ msg }}</p>
+        {% endif %}
+        <button type="submit">Salvar Alterações</button>
+    </form>
+    <a href="{% url 'conectapsiApp:listaranamnese' %}">Voltar à lista de clientes</a>
+</body>
+</html>

@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.urls import reverse
 
 from .forms import ClientesForm, AnamneseForm, EnderecoFormSet, get_endereco_formset, SessaoClinicaForm
-from .models import Clientes, Endereco
+from .models import Clientes, Anamnese
 
 # Create your views here.
 
@@ -12,6 +12,8 @@ CADASTRAR_CLIENTE = 'conectapsiApp/cadastroclientes.html'
 LISTAR_CLIENTES = 'conectapsiApp/listarclientes.html'
 HOME = 'conectapsiApp/base.html'
 ANAMNESE = 'conectapsiApp/anamnese.html'
+LISTAR_ANAMNESE = 'conectapsiApp/listaranamnese.html'
+ALTERAR_ANAMNESE = 'conectapsiApp/alteraranamnese.html'
 SESSAO_CLINICA = 'conectapsiApp/sessaoclinica.html'
 DOCUMENTOS = 'conectapsiApp/documentos.html'
 
@@ -33,7 +35,6 @@ def clientes(request):
 
 
 def cadastrar_clientes(request):
-    endereco_formset = EnderecoFormSet()
     try:
         if request.method == 'POST':
             clientes_form = ClientesForm(request.POST)
@@ -63,11 +64,11 @@ def cadastrar_clientes(request):
 def listar_clientes(request):
     clientes = Clientes.objects.all()
     form = ClientesForm()
-    campos = clientes.first().__dict__.keys() if clientes.exists() else []
-    return render(request, LISTAR_CLIENTES, {'clientes': clientes, 'campos': campos, 'form': form})
+    return render(request, LISTAR_CLIENTES, {'clientes': clientes, 'form': form})
 
 
 def alterar_cliente(request, codigo):
+    global EnderecoFormSet
     try:
         # Obtenha o cliente pelo ID
         cliente = get_object_or_404(Clientes, pk=codigo)
@@ -95,13 +96,10 @@ def alterar_cliente(request, codigo):
             clientes_form = ClientesForm(instance=cliente)
             endereco_formset = EnderecoFormSet(instance=cliente)
 
-            msg = None  # Não há mensagem em GET
-
         # Renderize o template com os formulários e a mensagem
         return render(request, 'conectapsiApp/alterarcliente.html', {
             'clientes_form': clientes_form,
             'endereco_formset': endereco_formset,
-            'msg': msg
         })
 
     except Exception as ex:
@@ -141,11 +139,70 @@ def cadastrar_anamnese(request):
         form = AnamneseForm(request.POST)
         if form.is_valid():
             form.save()
+            print('Anamnese Salva Com Sucesso!')
+            return redirect('conectapsiApp:anamnese')
 
-            msg = 'Anamnese Salva Com Sucesso!'
         else:
             msg = 'Erro ao Criar Anamnese'
         return render(request, ANAMNESE, {'form': form, 'msg': msg})
+
+
+def listar_anamense(request):
+    clientes = Clientes.objects.all()
+    anamneses = Anamnese.objects.all()
+    cliente_form = ClientesForm()
+    anamnese_form = AnamneseForm()
+    return render(request, LISTAR_ANAMNESE, {'anamneses': anamneses, 'clientes': clientes,
+                                             'cliente_form': cliente_form,
+                                             'anamnese_form': anamnese_form})
+
+
+def alterar_anamnese(request, codigo):
+    anamnese = get_object_or_404(Anamnese, pk=codigo)
+    cliente = anamnese.id_pct
+
+    try:
+        if request.method == 'POST':
+            anamnese_form = AnamneseForm(request.POST, instance=anamnese)
+            clientes_form = ClientesForm(request.POST, instance=cliente)
+
+            if anamnese_form.is_valid():
+                anamnese = anamnese_form.save()
+                msg = 'Anamnese alterada com sucesso.'
+                print(msg)
+                return redirect('conectapsiApp:listaranamnese')
+
+            else:
+                msg = anamnese_form.errors and clientes_form.errors
+        else:
+            anamnese_form = AnamneseForm(instance=anamnese)
+            clientes_form = ClientesForm(instance=cliente)
+
+        return render(request, 'conectapsiApp/alteraranamnese.html', {
+            'anamnese_form': anamnese_form,
+            'clientes_form': clientes_form})
+
+    except Exception as ex:
+        msg = ex.args
+        return render(request, 'conectapsiApp/alteraranamnese.html', {
+            'anamnese_form': AnamneseForm(instance=anamnese),
+            'msg': msg})
+
+
+def excluir_anamnese(request, codigo):
+    anamnese = Anamnese.objects.all()
+    try:
+        anamnese = Anamnese.objects.get(pk=codigo)
+        anamnese_excluida = anamnese.delete()
+
+        if anamnese_excluida[0] > 0:
+            msg = 'Cliente excluído com sucesso.'
+        else:
+            msg = 'Cliente não encontrado.'
+        return redirect('conectapsiApp:listaranamnese')
+    except Exception as ex:
+        msg = ex.args
+        return redirect('conectapsiApp:listaranamnese')
 
 
 def sessao_clinica_base(request):

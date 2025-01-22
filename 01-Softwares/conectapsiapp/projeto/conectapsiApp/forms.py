@@ -18,10 +18,10 @@ GENEROS = (
 )
 
 TIPO_ATENDIMENTO = (
-    ('P', 'Particular'),
-    ('Con', 'Convênio'),
-    ('CR', 'Clinica React'),
-    ('CN', 'Na Mesma Roda')
+    ('Particular', 'Particular'),
+    ('Convênio', 'Convênio'),
+    ('Clinica React', 'Clinica React'),
+    ('Na Mesma Roda', 'Na Mesma Roda')
 )
 
 ALTA = (
@@ -83,7 +83,7 @@ class ClientesForm(forms.ModelForm):
             'sobrenome': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Sobrenome'}),
             'nome_social': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nome Social'}),
             'genero': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Gênero'}, choices=GENEROS),
-            'data_nascimento': forms.DateInput(attrs={'class': 'form-control', 'type': 'text'}),
+            'data_nascimento': forms.DateInput(attrs={'class': 'form-control', 'type': 'text', 'placeholder': 'dd/mm/aaaa'}),
             'cpf': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '000.000.000-00'}, ),
             'estado_civil': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Estado civil'},
                                          choices=ESTADO_CIVIL),
