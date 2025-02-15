@@ -1,9 +1,10 @@
+from io import BytesIO
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
-from django.urls import reverse
-
+from docx import Document
+import os
 from .forms import ClientesForm, AnamneseForm, EnderecoFormSet, get_endereco_formset, SessaoClinicaForm
-from .models import Clientes, Anamnese
+from .models import Clientes, Anamnese, Endereco
 
 # Create your views here.
 
@@ -15,7 +16,7 @@ ANAMNESE = 'conectapsiApp/anamnese.html'
 LISTAR_ANAMNESE = 'conectapsiApp/listaranamnese.html'
 ALTERAR_ANAMNESE = 'conectapsiApp/alteraranamnese.html'
 SESSAO_CLINICA = 'conectapsiApp/sessaoclinica.html'
-DOCUMENTOS = 'conectapsiApp/documentos.html'
+DOCUMENTOS = 'conectapsiApp/templates/documentos'
 
 
 def home(request):
@@ -48,7 +49,10 @@ def cadastrar_clientes(request):
                     endereco.save()
 
                 msg = 'Cliente cadastrado com sucesso'
+                print('Cliente cadastrado com sucesso.')
+
             else:
+                print('Erro no formulario', clientes_form.errors)
                 msg = clientes_form.errors and endereco_formset.errors
 
             return render(request, CADASTRAR_CLIENTE, {'clientes_form': ClientesForm(),
@@ -68,7 +72,7 @@ def listar_clientes(request):
 
 
 def alterar_cliente(request, codigo):
-    global EnderecoFormSet
+    cliente = get_object_or_404(Clientes, pk=codigo)
     try:
         # Obtenha o cliente pelo ID
         cliente = get_object_or_404(Clientes, pk=codigo)
@@ -224,3 +228,133 @@ def cadastrar_sessao_clinica(request):
 
 def documentos(request):
     return render(request, DOCUMENTOS)
+
+
+def gerar_relatorio_anamnese(request, codigo):
+    cliente = get_object_or_404(Clientes, pk=codigo)
+    anamnese = Anamnese.objects.filter(id_pct=cliente).first()
+    endereco = Endereco.objects.filter(id_pct=cliente).first()
+
+    if not anamnese:
+        return HttpResponse("Anamnese não encontrada.", status=404)
+
+    if not endereco:
+        return HttpResponse("Endereço não encontrado", status=404)
+
+    # Definir o endereço para buscar o modelo do documento
+    modelo_anamnese_path = os.path.join('conectapsiApp', 'templates', 'documentos', 'anamnese_adulto.docx')
+
+    # carregar o documento
+    doc = Document(modelo_anamnese_path)
+
+    # Dados que serão substituidos
+    dados = {
+
+        "{{NOME}}": cliente.nome,
+        "{{SOBRENOME}}": cliente.sobrenome,
+        "{{GENERO}}": cliente.genero,
+        "{{DTNASC}}": str(cliente.data_nascimento),
+        "{{ESTADO_CIVIL}}": cliente.estado_civil,
+        "{{RUA}}": endereco.rua,
+        "{{NUMERO}}": endereco.numero,
+        "{{BAIRRO}}": endereco.bairro,
+        "{{CIDADE}}": endereco.cidade,
+        "{{UF}}": endereco.uf,
+        "{{PROFISSAO}}": cliente.profissao,
+        "{{ESCOLARIDADE}}": cliente.escolaridade,
+        "{{RELIGIAO}}": cliente.religiao,
+        "{{TEL}}": cliente.telefone_principal,
+        "{{TEL_EMER}}": cliente.telefone_emergencia,
+        "{{FILHOS}}": cliente.filhos_nome,
+        "{{FILHOS_IDADE}}": cliente.filhos_idade,
+        "{{FILHOS_SEXO}}": cliente.filhos_sexo,
+        "{{CONJUGE}}": cliente.conjuge_nome,
+        "{{CONJUGE_IDADE}}": cliente.conjuge_idade,
+        "{{CONJUGE_PROFISSAO}}": cliente.conjuge_idade,
+        "{{QX_PRINCIPAL}}": anamnese.queixa_principal,
+        "{{POSSIBILIDADE_HORARIO}}": anamnese.possibilidade_de_horarios,
+        "{{FEZ_TERAPIA}}": anamnese.fez_terapia_anterior,
+        "{{EXPECTATIVAS}}": anamnese.expectativa_e_objetivo_do_paciente,
+        "{{SINTOMAS_APRESENTADOS}}": anamnese.sintomas_apresentados,
+        "{{CONCEITUACAO}}": anamnese.conceituacao_psicologica_do_caso,
+        "{{TRANSTORNO_ANTERIORES}}": anamnese.transtornos_psiquiatricos_anteriores,
+        "{{TRANSTORNO_FAMILIAR}}": anamnese.transtornos_psiquiatricos_familiares,
+        "{{DOENCAS_QUE_TEVE}}": anamnese.doenca_importante_que_teve,
+        "{{MEDICACAO_TOMANDO}}": anamnese.uso_medicamentos,
+        "{{MEDICACAO_ALTERNATIVA}}": anamnese.uso_medicamentos_alternativos,
+        "{{TESTES}}": anamnese.aplicacao_de_teste,
+        "{{HISTORICO}}": anamnese.historico_da_queixa_quando_se_iniciou,
+        "{{TRAUMAS}}": anamnese.eventos_traumaticos_da_vida,
+        "{{FATORES_TRAUMATICOS}}": anamnese.eventos_que_agravam_a_crise,
+        "{{DROGAS}}": anamnese.uso_de_drogas,
+        "{{SUICIDIO}}": anamnese.tentativa_de_suicidio,
+        "{{REL_MAE}}": anamnese.relacionamentos_importantes_mae,
+        "{{REL_PAI}}": anamnese.relacionamentos_importantes_pai,
+        "{{REL_IRMAOS}}": anamnese.relacionamentos_importantes_irmaos,
+        "{{REL_FILHOS}}": anamnese.relacionamentos_importantes_filhos,
+        "{{REL_OUTROS}}": anamnese.relacionamentos_importantes_outros,
+        "{{REL_OBS}}": anamnese.relacionamentos_importantes_outros,
+        "{{GRAVIDEZ}}": anamnese.infancia_gravidez_planejada,
+        "{{AMAMENTACAO}}": anamnese.infancia_amamentacao,
+        "{{ESTRESSORES}}": anamnese.infancia_estressores_crises,
+        "{{OUTROS_TRANSTORNOS}}": anamnese.infancia_transtornos_infantis,
+        "{{COMENTARIOS}}": anamnese.infancia_comentarios,
+        "{{ADOL_AFETIVA}}": anamnese.adolescencia_experiencias_afetivas_marcantes,
+        "{{ADOL_SEXUAIS}}": anamnese.adolescencia_experiencias_sexuais_marcantes,
+        "{{ADOL_INDEPEN}}": anamnese.adolescencia_independencia,
+        "{{ADOL_CIRCULO}}": anamnese.adolescencia_circulo_de_amizades,
+        "{{ADULTA_PARCEIRO}}": anamnese.vida_adulta_relacionamento_com_parceiro,
+        "{{ADULTA_SEXUAL}}": anamnese.vida_adulta_vida_sexual_atual,
+        "{{ADULTA_FINCEIRA}}": anamnese.vida_adulta_situacao_financeira,
+        "{{ABORTOS}}": anamnese.vida_adulta_abordo_espontaneo,
+        "{{ADULTA_APOIO}}": anamnese.vida_adulta_apoio_social,
+        "{{ADULTA_OUTROS_TRANSTORNOS}}": anamnese.vida_adulta_outros_transtornos,
+        "{{ADULTA_LAZERES}}": anamnese.vida_adulta_principais_lazeres,
+        "{{OBSER_NAO_VERBAL}}": anamnese.observacao_e_linguagem_nao_verbal,
+        "{{ATENDIMENTO_PROFISSIONAL}}": anamnese.atendimentos_prestados_profissional,
+        "{{ENCAMINHAMENTO_FEITO}}": anamnese.atendimentos_prestados_encaminhamentos,
+        "{{TERAPEUTICA_UTILIZADA}}": anamnese.atendimentos_prestados_terapeutica_utilizada,
+        "{{ALTA}}": anamnese.atendimentos_prestados_destino_do_caso_alta,
+        "{{OUTRA_INSTITUICAO}}": anamnese.atendimentos_prestados_destino_do_caso_encaminhamento_outra_instituicao,
+        "{{ABANDONO}}": anamnese.atendimentos_prestados_destino_do_caso_abandono,
+        "{{ENC_OUTRO_PROF}}": anamnese.atendimentos_prestados_destino_do_caso_outro_profissional,
+        "{{INTERROMPIDO}}": anamnese.atendimentos_prestados_destino_do_caso_interrompido,
+        "{{MELHORIAS}}": anamnese.atendimentos_prestados_destino_do_caso_melhoras_obtidas,
+        "{{OBS_IMPORTANTES}}": anamnese.atendimentos_prestados_destino_do_caso_outras_obs,
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    }
+
+    # Substituir os {{placeholders}} no documento pelos dados dos clientes
+    for p in doc.paragraphs:
+        for run in p.runs:
+            for placeholder, valor in dados.items():
+                if placeholder in run.text:
+                    run.text = run.text.replace(placeholder, valor)
+        # p.text = p.text.replace('{{NOME}} {{SOBRENOME}}', f"{cliente.nome} {cliente.sobrenome}")
+        # p.text = p.text.replace('{{SEXO}}', cliente.genero)
+
+    # Salvar documento em memoria
+    conteudo_arquivo = BytesIO()
+    doc.save(conteudo_arquivo)
+    conteudo_arquivo.seek(0)
+
+    # Gerar resposta
+    response = HttpResponse(conteudo_arquivo.getvalue(),
+                            content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+
+    response['Content-Disposition'] = f'attachment; filename="Anamnese_{cliente.nome}_{cliente.sobrenome}.docx"'
+
+    return response

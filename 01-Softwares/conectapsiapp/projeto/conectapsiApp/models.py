@@ -70,6 +70,7 @@ class Clientes(models.Model):
     conjuge_nome = models.CharField(max_length=100, blank=True, null=True)
     conjuge_idade = models.CharField(max_length=10, blank=True, null=True)
     conjuge_sexo = models.CharField(max_length=10, blank=True, null=True)
+    conjuge_profissao = models.CharField(max_length=20, blank=True, null=True)
     filhos_nome = models.CharField(max_length=100, blank=True, null=True)
     filhos_idade = models.CharField(max_length=10, blank=True, null=True)
     filhos_sexo = models.CharField(max_length=10, blank=True, null=True)

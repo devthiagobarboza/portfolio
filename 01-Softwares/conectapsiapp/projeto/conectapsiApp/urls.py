@@ -24,4 +24,6 @@ urlpatterns = [
     #Sessão documentos
     path('Documentos/', views.documentos, name='documentos'),
 
+    # Gerar Anamnese
+    path('Documentos/GerarAnamnese/<int:codigo>', views.gerar_relatorio_anamnese, name='gerar_anamnese')
 ]

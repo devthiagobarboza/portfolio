@@ -36,13 +36,17 @@
         <td>{{ cliente.observacoes }}</td>
         <td><a href="{% url 'conectapsiApp:alterarcliente' codigo=cliente.id_pct  %}"> Alterar </a> |
             <a href="{% url 'conectapsiApp:excluircliente' codigo=cliente.id_pct  %}"
-               onclick="return window.confirm('Deseja realmente excluir?');"> Excluir </a></td>
+               onclick="return window.confirm('Deseja realmente excluir?');"> Excluir </a> |
+            <a href="{% url 'conectapsiApp:gerar_anamnese' codigo=cliente.id_pct %}">Baixar Anamnese</a></td>
+
+
 
     </tr>
     {% empty %}
     <tr>
         <td colspan="3">Nenhum cliente cadastrado.</td>
     </tr>
+
     {% endfor %}
     </tbody>
 </table>
